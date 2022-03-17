@@ -6,7 +6,7 @@ module.exports.Register = async (email, username, password) => {
     // check if the username already exists
     const check = await IsUserNameAlreadyExists(username)
     if(check){
-        throw({message: 'Username already exists', status: 301})
+        throw({message: 'Username already exists', status: 409})
     }
 
     // hash the password

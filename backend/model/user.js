@@ -22,6 +22,10 @@ const IsUserNameAlreadyExists = async (username) => {
 
 }
 
+const GetPasswordOfAccount = async (username) => {
 
+    const user = await UserModel.findOne({username: username})
+    return user.password
+}
 
-module.exports = {UserModel, IsUserNameAlreadyExists}
+module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount}
