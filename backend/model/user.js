@@ -28,4 +28,14 @@ const GetPasswordOfAccount = async (username) => {
     return user.password
 }
 
-module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount}
+const CreateNewUser = async (email, username, password) => {
+    const user = new UserModel({
+        email,
+        username,
+        password
+    })
+    await user.save()
+    return user._id
+}
+
+module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount, CreateNewUser}

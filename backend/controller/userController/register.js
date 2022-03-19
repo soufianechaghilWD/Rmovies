@@ -1,4 +1,4 @@
-const { UserModel, IsUserNameAlreadyExists } = require('../../model/user')
+const { UserModel, IsUserNameAlreadyExists, CreateNewUser } = require('../../model/user')
 const bcrypt = require('bcrypt')
 
 module.exports.Register = async (email, username, password) => {
@@ -12,12 +12,7 @@ module.exports.Register = async (email, username, password) => {
     // hash the password
     const crypted_pass = await bcrypt.hash(password, 10)
 
-
-    const user = new UserModel({
-        email,
-        username,
-        password: crypted_pass
-    })
-    await user.save()
-    return {id: user._id}
+    
+    const user_id = await CreateNewUser(email, username, crypted_pass)
+    return {id: user_id}
 }
