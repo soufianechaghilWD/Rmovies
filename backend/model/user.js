@@ -7,7 +7,7 @@ const userSchema = new Schema({
     username: String,
     profilePic: {type: String, default: "default_url_pic.png"},
     password: String,
-    favouriteList: [{type: Schema.Types.ObjectId, ref: "M/TV"}],
+    favouriteList: [{type: Schema.Types.ObjectId, ref: "Mtv"}],
     suggestionList: [{type: Schema.Types.ObjectId, ref: "Suggestion"}]
 })
 
