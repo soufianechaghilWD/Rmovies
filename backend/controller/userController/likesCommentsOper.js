@@ -1,5 +1,5 @@
 const { IsMtvAlreadyExistById, GetAnMtv } = require('../../model/mtv')
-const { DoesUserExist } = require('../../model/user')
+const { DoesUserExist, GetAUser } = require('../../model/user')
 const { CreateComment, RemoveComment, EditComment } = require('../../model/comment')
 
 
@@ -83,4 +83,21 @@ const DeleteComment = async (userId, postId, commentId) => {
     return true
 }
 
-module.exports = {LikeMtv, CommentMtv, DeleteComment, UpdateComment}
+const addToFavoriteList = async (userId, postId) => {
+    // check if the post exist
+    const doesMtvExist = await IsMtvAlreadyExistById(postId)
+    if(!doesMtvExist.done) throw({status: 404, message: doesMtvExist.message || "Mtv does not exist"})
+
+    // add the post to favorite list
+    const user = await GetAUser(userId)
+
+    if(!user.done) throw({status: 404, message: user.message || "Could not get the user"})
+
+    if(user.user.favoriteList.includes(postId)) throw({status: 409, message: "Mtv already in favorite list"})
+
+    user.user.favoriteList.push(postId)
+    await user.user.save()
+    return true
+}
+
+module.exports = {LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList}

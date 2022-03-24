@@ -4,9 +4,10 @@ const { Login } = require('../controller/adminController/login');
 const { AddMtv } = require('../controller/adminController/addMtv');
 const { Register } = require('../controller/userController/register');
 const { LoginUser } = require('../controller/userController/login');
-const { LikeMtv, CommentMtv, DeleteComment, UpdateComment } = require('../controller/userController/likesCommentsOper');
+const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('../controller/userController/likesCommentsOper');
 const { MtvModel } = require('../model/mtv');
 const { DoesCommentExist, CommentModel } = require('../model/comment');
+const { GetAUser } = require('../model/user');
 
 
 var mongod;
@@ -171,6 +172,41 @@ describe('Edit the comment', () => {
         const cmt = await UpdateComment(userId, postId, commentId, "this is a new comment")
         const newCmt = await CommentModel.findById(cmt.cmtId)
         expect(newCmt.content).toEqual('this is a new comment')
+    })
+})
+
+describe('Add mtv to wish list', () => {
+    it('Should return post does not exist', async () => {
+        try{
+            const done = await addToFavoriteList(userId, postId+"wrong")
+        }
+        catch(err){
+            expect(err.status).toEqual(404)
+        }
+    })
+    it('Should return user does not exist', async () => {
+        try{
+            const done = await addToFavoriteList(userId+"wrong", postId)
+        }
+        catch(err){
+            expect(err.status).toEqual(404)
+        }
+    })
+    it('Should add post to favorite list', async () => {
+        const done = await addToFavoriteList(userId, postId)
+        expect(done).toBeTruthy()
+
+        const user = await GetAUser(userId)
+        expect(user.user.favoriteList).toContainEqual(postId)
+    })
+    it("Should return mtv already exists in favorite list", async () => {
+        try{
+            const done = await addToFavoriteList(userId, postId)
+        }
+        catch(err){
+            expect(err.status).toBe(409)
+            expect(err.message).toEqual('Mtv already in favorite list')
+        }
     })
 })
 

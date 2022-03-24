@@ -4,7 +4,7 @@ const { LoginUser } = require('./userController/login')
 const userRouter = express.Router()
 const { returnError } = require('./errorHandling')
 const { Verify } = require('./userController/verifyJwt')
-const { LikeMtv, CommentMtv, DeleteComment, UpdateComment } = require('./userController/likesCommentsOper')
+const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('./userController/likesCommentsOper')
 
 userRouter.post('/register', async (req, res, next) => {
     try{
@@ -55,6 +55,17 @@ userRouter.put('/updateComment', Verify, async (req, res, next) => {
         const {userId, postId, commentId, newComment} = req.body
         const cmt = await UpdateComment(userId, postId, commentId, newComment)
         res.status(200).json(cmt)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.put('/addToFavouriteList', Verify, async (req, res, next) => {
+    try{
+        const {userId, postId} = req.body
+        const done = await addToFavoriteList(userId, postId)
+        res.status(200).json({done})
     }
     catch(err){
         returnError(err, res)
