@@ -4,7 +4,10 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
 const commentSchema = new schema({
-    content: String
+    content: String,
+    added: {type: Date, default: new Date()}, 
+    updated: {type: Boolean, default: false},
+    lastUpdated: {type: Date, default: null}
 })
 
 
@@ -36,7 +39,7 @@ const DoesCommentExist = async (id) => {
     }
 }
 
-const DeleteComment = async (id) => {
+const RemoveComment = async (id) => {
     try{
         const doesExist = await DoesCommentExist(id)
         if(!doesExist) return {done: false, message: "Comment does not exist"}
@@ -59,6 +62,8 @@ const EditComment = async (id, newcomment) => {
         const Cmt = await CommentModel.findById(id)
 
         Cmt.content = newcomment
+        Cmt.updated = true
+        Cmt.lastUpdated = new Date()
         await Cmt.save()
         return {done: true}
     }
@@ -68,4 +73,4 @@ const EditComment = async (id, newcomment) => {
 }
 
 
-module.exports = {CommentModel, CreateComment, DoesCommentExist, DeleteComment, EditComment}
+module.exports = {CommentModel, CreateComment, DoesCommentExist, RemoveComment, EditComment}

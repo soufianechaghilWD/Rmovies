@@ -86,4 +86,14 @@ const DeleteMtv = async (id) => {
     }
 }
 
-module.exports = {MtvModel, IsMtvAlreadyExist, CreateNewMtv, IsMtvAlreadyExistById, UpdateMtv, DeleteMtv}
+const GetAnMtv = async (id) => {
+    try{
+        const mtv = await MtvModel.findById(id)
+        return {done: true, mtv: mtv}
+    }
+    catch(err){
+        return { done: false, message: err.message}
+    }
+}
+
+module.exports = {MtvModel, IsMtvAlreadyExist, CreateNewMtv, IsMtvAlreadyExistById, UpdateMtv, DeleteMtv, GetAnMtv}

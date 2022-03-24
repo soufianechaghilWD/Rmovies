@@ -38,4 +38,18 @@ const CreateNewUser = async (email, username, password) => {
     return user._id
 }
 
-module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount, CreateNewUser}
+const DoesUserExist = async (id) => {
+    try{
+        const user = await UserModel.findById(id)
+        if(user === null) return false
+
+        return true
+    }
+    catch(err){
+        return false
+    }
+}
+
+
+
+module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount, CreateNewUser, DoesUserExist}
