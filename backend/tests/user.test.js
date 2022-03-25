@@ -1,6 +1,6 @@
 const db = require('./db')
 const { Register }  = require('../controller/userController/register')
-const { Login }  = require('../controller/userController/login')
+const { LoginUser }  = require('../controller/userController/login')
 const { UserModel } = require('../model/user')
 
 
@@ -42,14 +42,14 @@ describe('User test', () => {
     })
     it('Login User goes as expected', async () => {
 
-        const {token} = await Login(username, password)
+        const {token} = await LoginUser(username, password)
         expect(typeof token).toBe("string")
 
     })
     it('Login User / User does not exists', async () => {
         
         try{
-            const {data} = await Login(wrongUsername, password)
+            const {data} = await LoginUser(wrongUsername, password)
         }
         catch(err){
             expect(err.status).toEqual(404)
@@ -59,7 +59,7 @@ describe('User test', () => {
     it('Login User / password Incorrect', async () => {
         
         try{
-            const {data} = await Login(username, wrongPassword)
+            const {data} = await LoginUser(username, wrongPassword)
         }
         catch(err){
             expect(err.status).toEqual(403)

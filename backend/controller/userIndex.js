@@ -1,8 +1,12 @@
 const express = require('express')
 const { Register } = require('./userController/register')
-const { Login } = require('./userController/login')
+const { LoginUser } = require('./userController/login')
 const userRouter = express.Router()
 const { returnError } = require('./errorHandling')
+const { Verify } = require('./userController/verifyJwt')
+const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList, rateMtv } = require('./userController/likesCommentsOper')
+const { AddSuggMtv, RemoveSuggMtv } = require('./userController/suggMtvOps')
+const { Feed } = require('./userController/feed')
 
 userRouter.post('/register', async (req, res, next) => {
     try{
@@ -15,15 +19,113 @@ userRouter.post('/register', async (req, res, next) => {
     }
 })
 
-userRouter.post('/login', async(req, res, next) => {
+userRouter.post('/login', async (req, res, next) => {
     try{
         const {username, password} = req.body
-        const token = await Login(username, password)
+        const token = await LoginUser(username, password)
         res.status(200).json(token)
     }
     catch(err){
         returnError(err, res)
     }
 })
+
+userRouter.post('/likeMtv', Verify, async (req, res, next) => {
+    try{
+        const {userId, postId} = req.body
+        const cmt = await LikeMtv(userId, postId)
+        res.status(200).json(cmt)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.post('/commentMtv', Verify, async (req, res, next) =>  {
+    try{
+        const {userId, postId, comment} = req.body
+        const done = await CommentMtv(userId, postId, comment)
+        res.status(200).json(done)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.put('/updateComment', Verify, async (req, res, next) => {
+    try{
+        const {userId, postId, commentId, newComment} = req.body
+        const cmt = await UpdateComment(userId, postId, commentId, newComment)
+        res.status(200).json(cmt)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.put('/addToFavouriteList', Verify, async (req, res, next) => {
+    try{
+        const {userId, postId} = req.body
+        const done = await addToFavoriteList(userId, postId)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.delete('/deleteComment', Verify, async (req, res, next) => {
+    try{
+        const {userId, postId, commentId} = req.body
+        const done = await DeleteComment(userId, postId, commentId)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.post('/addSuggMtv', Verify, async (req, res, next) => {
+    try{
+        const done = await AddSuggMtv(req.body)
+        res.status(200).json(done)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.delete('/deleteSuggMtv', Verify, async (req, res, next) => {
+    try{
+        const {userId, suggMtvId} = req.body
+        const done = await RemoveSuggMtv(userId, suggMtvId)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.put('/rateMtv', Verify, async (req, res, next) => {
+    try{
+        const {postId, rate} = req.body
+        const done = await rateMtv(postId, rate)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.get('/feed', async (req, res, next) => {
+    try{
+        const mtvs = await Feed()
+        res.status(200).json({mtvs})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
 
 module.exports = userRouter

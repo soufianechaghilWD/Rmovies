@@ -7,12 +7,12 @@ module.exports.VerifyAdmin = async (req, res, next) => {
 
     // check if the token does not exist
     if(!token) {
-        res.status(401).json({message: "token is missing"})
+        return res.status(401).json({message: "token is missing"})
     }
 
     jwt.verify(token, "JwtSecretAdmin", (err, decode) => {
-        if(err) res.status(401).json({message: "Invalid Token"})
-        console.log(decode)
+        if(err) return res.status(401).json({message: "Invalid Token"})
+
         next()
     })
 

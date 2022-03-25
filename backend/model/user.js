@@ -7,7 +7,7 @@ const userSchema = new Schema({
     username: String,
     profilePic: {type: String, default: "default_url_pic.png"},
     password: String,
-    favouriteList: [{type: Schema.Types.ObjectId, ref: "M/TV"}],
+    favoriteList: [{type: Schema.Types.ObjectId, ref: "Mtv"}],
     suggestionList: [{type: Schema.Types.ObjectId, ref: "Suggestion"}]
 })
 
@@ -28,4 +28,38 @@ const GetPasswordOfAccount = async (username) => {
     return user.password
 }
 
-module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount}
+const CreateNewUser = async (email, username, password) => {
+    const user = new UserModel({
+        email,
+        username,
+        password
+    })
+    await user.save()
+    return user._id
+}
+
+const DoesUserExist = async (id) => {
+    try{
+        const user = await UserModel.findById(id)
+        if(user === null) return false
+
+        return true
+    }
+    catch(err){
+        return false
+    }
+}
+
+const GetAUser = async (id) => {
+    try{
+        const user = await UserModel.findById(id)
+        return { done: true, user: user}
+    }
+    catch(err){
+        return { done : false, message: err.message}
+    }
+}
+
+
+
+module.exports = {UserModel, IsUserNameAlreadyExists, GetPasswordOfAccount, CreateNewUser, DoesUserExist, GetAUser}

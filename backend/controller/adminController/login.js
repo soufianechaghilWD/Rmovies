@@ -13,6 +13,6 @@ module.exports.Login = async (ident, pass) => {
     }
 
     // return a token
-    const token = jwt.sign({username: ident}, "JwtSecretAdmin", {expiresIn: "7d"})
+    const token = jwt.sign({admin: ident}, "JwtSecretAdmin", {expiresIn: "7d"})
     return {token: token}
 }

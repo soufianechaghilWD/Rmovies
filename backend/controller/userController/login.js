@@ -2,7 +2,7 @@ const { IsUserNameAlreadyExists, GetPasswordOfAccount } = require('../../model/u
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-module.exports.Login = async (username, password) => {
+module.exports.LoginUser = async (username, password) => {
     
     // check the account exists or not
     const check = await IsUserNameAlreadyExists(username)
