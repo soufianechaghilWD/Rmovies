@@ -5,6 +5,7 @@ const { AddMtv } = require('./adminController/addMtv')
 const { VerifyAdmin } = require('./adminController/verifyAdmin')
 const { EditMtv } =require('./adminController/editMtv')
 const { DeleteMtv } = require('./adminController/deleteMtv')
+const { ADsuggMtv } = require('./adminController/ADsuggMtv')
 
 const adminRouter = express.Router()
 
@@ -50,5 +51,16 @@ adminRouter.delete('/deleteMtv', VerifyAdmin, async(req, res) => {
         returnError(err, res)
     }
 })
+
+adminRouter.post('/setSuggMtv', VerifyAdmin, async (req, res) => {
+    try{
+        const done = await ADsuggMtv(req.body)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
 
 module.exports = adminRouter;

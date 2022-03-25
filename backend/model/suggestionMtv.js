@@ -13,7 +13,8 @@ const suggMtv = new schema({
     length: {type: Number, default: null},
     seasons: {type: Number, default: null},
     episodes: {type: Number, default: null},
-    status: {type: String, enum: ['pending', 'aproved', 'denied'], default: "pending"}
+    status: {type: String, enum: ['pending', 'aproved', 'denied'], default: "pending"},
+    suggester: {type: schema.Types.ObjectId, ref: "User"}
 })
 
 
@@ -83,7 +84,7 @@ const DeleteSuggMtv = async (id) => {
         const doesSuggExist = await SuggMtvModel.findById(id)
         if(!doesSuggExist) return {message: "the suggmtv does not exist"}
 
-        // delete the sugg mmtv
+        // delete the sugg mtv
         const deletedSuggMtv = await SuggMtvModel.deleteOne({_id: id})
         if(deletedSuggMtv.deletedCount === 1) return {done: true}
 

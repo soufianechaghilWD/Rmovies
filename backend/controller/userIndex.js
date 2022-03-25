@@ -5,6 +5,7 @@ const userRouter = express.Router()
 const { returnError } = require('./errorHandling')
 const { Verify } = require('./userController/verifyJwt')
 const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('./userController/likesCommentsOper')
+const { AddSuggMtv, RemoveSuggMtv } = require('./userController/suggMtvOps')
 
 userRouter.post('/register', async (req, res, next) => {
     try{
@@ -76,6 +77,27 @@ userRouter.delete('/deleteComment', Verify, async (req, res, next) => {
     try{
         const {userId, postId, commentId} = req.body
         const done = await DeleteComment(userId, postId, commentId)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.post('/addSuggMtv', Verify, async (req, res, next) => {
+    try{
+        const done = await AddSuggMtv(req.body)
+        res.status(200).json(done)
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.delete('/deleteSuggMtv', Verify, async (req, res, next) => {
+    try{
+        const {userId, suggMtvId} = req.body
+        const done = await RemoveSuggMtv(userId, suggMtvId)
         res.status(200).json({done})
     }
     catch(err){

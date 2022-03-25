@@ -5,9 +5,12 @@ const { AddMtv } = require('../controller/adminController/addMtv');
 const { Register } = require('../controller/userController/register');
 const { LoginUser } = require('../controller/userController/login');
 const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('../controller/userController/likesCommentsOper');
-const { MtvModel } = require('../model/mtv');
+const { MtvModel, GetAnMtv } = require('../model/mtv');
 const { DoesCommentExist, CommentModel } = require('../model/comment');
 const { GetAUser } = require('../model/user');
+const { AddSuggMtv, RemoveSuggMtv } = require('../controller/userController/suggMtvOps');
+const { GetASuggMtv } = require('../model/suggestionMtv');
+const { ADsuggMtv } = require('../controller/adminController/ADsuggMtv');
 
 
 var mongod;
@@ -54,6 +57,7 @@ const comment = "this is a comment"
 
 // Comment id
 var commentId;
+
 
 describe('Login Admin / Create Mtv / Register User / Login User', () => {
     it('Should login the admin', async () => {
@@ -244,5 +248,86 @@ describe('Delete a comment', () => {
         expect(!mtv.comments.includes(commentId)).toBeTruthy()
         const cmt = await DoesCommentExist(commentId)
         expect(!cmt).toBeTruthy()
+    })
+})
+
+// sugg mtv
+const suggMtvData = {
+    name: "game of sugg tests",
+    gendar: "action",
+    description: "best in sugg the world",
+    picture: "pic.png",
+    type: "tvShow",
+    seasons: 7,
+    episodes: 67,
+    suggester: userId
+};
+
+// sugg mtv id
+var suggMtvId;
+
+describe('Add Sugg Mtv', () => {
+    it('Should return mtv already exist', async () => {
+        try{
+            const done = await AddSuggMtv(mtvData)
+        }
+        catch(err){
+            expect(err.status).toBe(404)
+            expect(err.message).toBe("Mtv already exist")
+        }
+    })
+    it('Should add sugg mtv', async () => {
+        suggMtvData.suggester = userId
+        const done = await AddSuggMtv(suggMtvData)
+        suggMtvId = done.id
+
+        const user = await GetAUser(userId)
+        expect(user.user.suggestionList).toContainEqual(suggMtvId)
+    })
+    it('Should return document already exist in suggMtv', async () => {
+        try{
+            suggMtvData.suggester = userId
+            const done = await AddSuggMtv(suggMtvData)
+        }
+        catch(err){
+            expect(err.status).toBe(404)
+            expect(err.message).toBe('SuggMtv already exist')
+        }
+    })
+})
+
+describe('Set Sugg mtv', () => {
+    it('Should set the status to denied', async () => {
+        const done = await ADsuggMtv(suggMtvId, 'denied')
+        expect(done).toBeTruthy()
+        const suggmtv = await GetASuggMtv(suggMtvId)
+        expect(suggmtv.suggmtv.status).toBe('denied')
+    })
+    it('Should set the status to approved', async () => {
+        const done = await ADsuggMtv(suggMtvId, "aproved")
+        expect(done.done).toBeTruthy()
+        const mtv = await GetAnMtv(done.id)
+        expect(mtv.mtv.name).toBe('game of sugg tests')
+        expect(mtv.mtv.gendar).toBe('action')
+        expect(mtv.mtv.description).toBe('best in sugg the world')
+    })
+})
+
+describe('Delete Sugg Mtv', () => {
+    it('Should return you are not the suggester', async () => {
+        try{
+            const done = await RemoveSuggMtv(userId+"wo", suggMtvId)
+        }
+        catch(err){
+            expect(err.status).toBe(404)
+            expect(err.message).toBe('You could not delete a sugg mtv that you did not suggest')
+        }
+    })
+    it('Should delete the sugg mtv', async () => {
+        const done = await RemoveSuggMtv(userId, suggMtvId)
+        expect(done).toBeTruthy()
+    
+        const user = await GetAUser(userId)
+        expect(!user.user.suggestionList.includes(suggMtvId)).toBeTruthy()    
     })
 })
