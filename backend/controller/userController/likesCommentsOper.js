@@ -1,4 +1,4 @@
-const { IsMtvAlreadyExistById, GetAnMtv } = require('../../model/mtv')
+const { IsMtvAlreadyExistById, GetAnMtv, RateMtv } = require('../../model/mtv')
 const { DoesUserExist, GetAUser } = require('../../model/user')
 const { CreateComment, RemoveComment, EditComment } = require('../../model/comment')
 
@@ -100,4 +100,16 @@ const addToFavoriteList = async (userId, postId) => {
     return true
 }
 
-module.exports = {LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList}
+const rateMtv = async (postId, rate) => {
+    // check if the post exist
+    const doesMtvExist = await IsMtvAlreadyExistById(postId)
+    if(!doesMtvExist.done) throw({status: 404, message: doesMtvExist.message || "Mtv does not exist"})
+
+    // add the rate
+    const done = await RateMtv(postId, rate)
+    if(done.message) throw({status: 400, message: done.message || "Could not add the rate"})
+
+    return true
+}
+
+module.exports = {LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList, rateMtv}

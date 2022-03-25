@@ -80,7 +80,7 @@ describe("Create an Mtv", () => {
     expect(mtv.type).toEqual("tvShow");
     expect(mtv.seasons).toEqual(7);
     expect(mtv.episodes).toEqual(67);
-    expect(mtv.rate).toEqual(0);
+    expect(mtv.rate).toEqual(5);
     expect(mtv.length).toEqual(null);
   });
   it("should return element already exists", async () => {

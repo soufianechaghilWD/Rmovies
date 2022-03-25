@@ -4,8 +4,9 @@ const { LoginUser } = require('./userController/login')
 const userRouter = express.Router()
 const { returnError } = require('./errorHandling')
 const { Verify } = require('./userController/verifyJwt')
-const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('./userController/likesCommentsOper')
+const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList, rateMtv } = require('./userController/likesCommentsOper')
 const { AddSuggMtv, RemoveSuggMtv } = require('./userController/suggMtvOps')
+const { Feed } = require('./userController/feed')
 
 userRouter.post('/register', async (req, res, next) => {
     try{
@@ -99,6 +100,27 @@ userRouter.delete('/deleteSuggMtv', Verify, async (req, res, next) => {
         const {userId, suggMtvId} = req.body
         const done = await RemoveSuggMtv(userId, suggMtvId)
         res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.put('/rateMtv', Verify, async (req, res, next) => {
+    try{
+        const {postId, rate} = req.body
+        const done = await rateMtv(postId, rate)
+        res.status(200).json({done})
+    }
+    catch(err){
+        returnError(err, res)
+    }
+})
+
+userRouter.get('/feed', async (req, res, next) => {
+    try{
+        const mtvs = await Feed()
+        res.status(200).json({mtvs})
     }
     catch(err){
         returnError(err, res)

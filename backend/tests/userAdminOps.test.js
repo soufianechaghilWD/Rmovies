@@ -4,7 +4,7 @@ const { Login } = require('../controller/adminController/login');
 const { AddMtv } = require('../controller/adminController/addMtv');
 const { Register } = require('../controller/userController/register');
 const { LoginUser } = require('../controller/userController/login');
-const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList } = require('../controller/userController/likesCommentsOper');
+const { LikeMtv, CommentMtv, DeleteComment, UpdateComment, addToFavoriteList, rateMtv } = require('../controller/userController/likesCommentsOper');
 const { MtvModel, GetAnMtv } = require('../model/mtv');
 const { DoesCommentExist, CommentModel } = require('../model/comment');
 const { GetAUser } = require('../model/user');
@@ -117,6 +117,14 @@ describe('Like an mtv', () => {
     })
 })
 
+describe('Rate an mtv', () => {
+    it('Should rate the mtv', async () => {
+        const done = await rateMtv(postId, 5)
+        expect(done).toBeTruthy()
+        const mtv = await GetAnMtv(postId)
+        expect(mtv.mtv.rate).toBe(5)
+    })
+})
 
 describe('Comment an mtv', () => {
     it('Should return post does not exist', async () => {

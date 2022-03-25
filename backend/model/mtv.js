@@ -8,7 +8,7 @@ const mtvSchema = new schema({
     description: String,
     picture: String,
     type: {type: String, enum: ["movie", 'tvShow']},
-    rate: {type: Number, default: 0 },
+    rate: {type: Number, default: 5 },
     length: {type: Number, default: null},
     seasons: {type: Number, default: null},
     episodes: {type: Number, default: null},
@@ -96,4 +96,18 @@ const GetAnMtv = async (id) => {
     }
 }
 
-module.exports = {MtvModel, IsMtvAlreadyExist, CreateNewMtv, IsMtvAlreadyExistById, UpdateMtv, DeleteMtv, GetAnMtv}
+
+const RateMtv = async (id, rate) => {
+    try{
+        // get the mtv
+        const mtv = await GetAnMtv(id)
+        mtv.mtv.rate = (mtv.mtv.rate+rate) / 2
+        await mtv.mtv.save()
+        return { done : true }
+    }
+    catch(err){
+        return {message: err.message}
+    }
+}
+
+module.exports = {MtvModel, IsMtvAlreadyExist, CreateNewMtv, IsMtvAlreadyExistById, UpdateMtv, DeleteMtv, GetAnMtv, RateMtv}
